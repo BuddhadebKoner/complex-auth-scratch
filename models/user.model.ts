@@ -8,9 +8,9 @@ export interface IUser {
    address: string;
    role: string;
    otp: string;
-   otpExpire: number;  
+   otpExpire: string;
    resetOtp: string;
-   resetOtpExpire: number;  
+   resetOtpExpire: string;
    isVerified: boolean;
    imageUrl: string;
    imageId: string;
@@ -36,20 +36,14 @@ const UserSchema = new mongoose.Schema({
    },
    phone: {
       type: String,
-      required: true,
-   },
-   slug: {
-      type: String,
-      unique: true,
-      required: true,
+      default: "",
    },
    address: {
       type: String,
-      required: true,
+      default: "",
    },
    role: {
       type: String,
-      required: true,
       enum: ["admin", "customer", "seller"],
       default: "customer",
    },
@@ -58,7 +52,7 @@ const UserSchema = new mongoose.Schema({
       default: "",
    },
    otpExpire: {
-      type: Number,
+      type: Date,
       default: 0,
    },
    resetOtp: {
@@ -66,7 +60,7 @@ const UserSchema = new mongoose.Schema({
       default: "",
    },
    resetOtpExpire: {
-      type: Number,
+      type: Date,
       default: 0,
    },
    isVerified: {
