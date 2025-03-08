@@ -53,7 +53,7 @@ const UserSchema = new mongoose.Schema({
    },
    otpExpire: {
       type: Date,
-      default: 0,
+      default: null,
    },
    resetOtp: {
       type: String,
@@ -61,7 +61,7 @@ const UserSchema = new mongoose.Schema({
    },
    resetOtpExpire: {
       type: Date,
-      default: 0,
+      default: null,
    },
    isVerified: {
       type: Boolean,
@@ -73,6 +73,22 @@ const UserSchema = new mongoose.Schema({
    },
    imageId: {
       type: String,
+      default: "",
+   },
+   jwtToken: {
+      type: String,
+      default: "",
+   },
+   lastLogin: {
+      type: Date,
+      default: "",
+   },
+   lastLogout: {
+      type: Date,
+      default: "",
+   },
+   lastPasswordChange: {
+      type: Date,
       default: "",
    },
    orders: [

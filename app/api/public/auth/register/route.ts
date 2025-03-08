@@ -1,6 +1,7 @@
 import transporter from "@/config/nodemailer";
 import { connectToDatabase } from "@/lib/db";
 import User from "@/models/user.model";
+import { registerOtpHtml } from "@/utils/mailoptions";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
                from: process.env.SENDER_EMAIL,
                to: email,
                subject: "Verify Your Account",
-               text: `Your OTP is ${otp}`
+               html: registerOtpHtml(name, otp),
             };
             await transporter.sendMail(mailOptions);
 
@@ -65,15 +66,20 @@ export async function POST(request: NextRequest) {
          )
       }
 
-      // Send OTP via email
+      // Send OTP via email with professional styling
       const mailOptions = {
          from: process.env.SENDER_EMAIL,
          to: email,
          subject: "Verify Your Account",
-         text: `Your OTP is ${otp}`
+         html: registerOtpHtml(name, otp),
       };
-      await transporter.sendMail(mailOptions);
-
+      const res = await transporter.sendMail(mailOptions);
+      if (!res) {
+         return NextResponse.json(
+            { error: "Failed to send OTP" },
+            { status: 500 }
+         )
+      }
 
       return NextResponse.json(
          { message: "OTP sent to your email" },
