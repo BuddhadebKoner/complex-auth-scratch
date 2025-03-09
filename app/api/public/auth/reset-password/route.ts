@@ -1,3 +1,4 @@
+import { connectToDatabase } from "@/lib/db";
 import User from "@/models/user.model";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,6 +14,7 @@ export const POST = async (request: NextRequest) => {
          );
       }
 
+      await connectToDatabase();
       // check user is exist
       const user = await User.findOne({ email })
          .select('resetOtp resetOtpExpires password');
@@ -20,15 +22,6 @@ export const POST = async (request: NextRequest) => {
       if (!user) {
          return NextResponse.json(
             { error: "User is not exist !" },
-            { status: 400 }
-         );
-      }
-
-      // decode old password and match with new password
-      const isMatchedWithOldPassword = await bcrypt.compare(newPassword, user.password);
-      if (isMatchedWithOldPassword) {
-         return NextResponse.json(
-            { error: "Try With Another password !" },
             { status: 400 }
          );
       }
@@ -47,6 +40,15 @@ export const POST = async (request: NextRequest) => {
             { status: 400 }
          );
       }
+      // decode old password and match with new password
+      const isMatchedWithOldPassword = await bcrypt.compare(newPassword, user.password);
+      if (isMatchedWithOldPassword) {
+         return NextResponse.json(
+            { error: "Try With Another password !" },
+            { status: 400 }
+         );
+      }
+
 
       // hash new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);

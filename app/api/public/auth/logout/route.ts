@@ -1,13 +1,15 @@
+import { connectToDatabase } from "@/lib/db";
 import { clearTokenCookie, verifyToken } from "@/lib/jwt";
 import User from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
    try {
+      await connectToDatabase();
+      
       // Get the token from cookies
       const token = request.cookies.get('token')?.value;
-      // console.log(token);
-      // If token exists, invalidate it in the database
+
       if (token) {
          const decoded = verifyToken(token);
 

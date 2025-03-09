@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/lib/db";
 import User from "@/models/user.model";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
-import { generateToken, setTokenCookie } from "@/lib/jwt";
+import { clearTokenCookie, generateToken, setTokenCookie } from "@/lib/jwt";
 
 export const POST = async (request: NextRequest) => {
    try {
@@ -26,9 +26,12 @@ export const POST = async (request: NextRequest) => {
 
       // Generic error messages that don't reveal which part failed
       if (!userLogin || !userLogin.isVerified || !(await bcrypt.compare(password, userLogin.password))) {
-         return NextResponse.json(
-            { error: "Invalid credentials" },
-            { status: 401 }
+
+         return clearTokenCookie(
+            NextResponse.json(
+               { Error: "Login with Currect password" },
+               { status: 200 }
+            )
          );
       }
 

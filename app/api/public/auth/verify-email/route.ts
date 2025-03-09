@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import User from "@/models/user.model";
 import { connectToDatabase } from "@/lib/db";
-import { generateToken } from "@/lib/jwt";
+import { generateToken, setTokenCookie } from "@/lib/jwt";
 
 export const POST = async (request: NextRequest) => {
    try {
@@ -51,6 +51,7 @@ export const POST = async (request: NextRequest) => {
             );
          }
 
+
          // Invalidate previous tokens and update with new one
          const result = await User.findByIdAndUpdate(
             user._id,
@@ -59,6 +60,7 @@ export const POST = async (request: NextRequest) => {
                otp: '',
                otpExpire: '',
                jwtToken: token,
+               lastLogin: Date.now()
             },
             { new: true }
          ).select('name email role _id');
@@ -70,6 +72,15 @@ export const POST = async (request: NextRequest) => {
             );
          }
 
+         //   return and set cookie
+         return setTokenCookie(
+            NextResponse.json(
+               { message: "Email verified successfully", },
+               { status: 200 }
+            ),
+            token
+         );
+
       } catch (error) {
          return NextResponse.json(
             { error: "Authentication failed" },
@@ -77,10 +88,6 @@ export const POST = async (request: NextRequest) => {
          );
       }
 
-      return NextResponse.json(
-         { message: "Account verified" },
-         { status: 200 }
-      );
    } catch (error) {
       return NextResponse.json(
          { error: "Authentication failed" },

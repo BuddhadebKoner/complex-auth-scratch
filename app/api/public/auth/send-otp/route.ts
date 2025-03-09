@@ -1,4 +1,5 @@
 import transporter from "@/config/nodemailer";
+import { connectToDatabase } from "@/lib/db";
 import { verifyToken } from "@/lib/jwt";
 import User from "@/models/user.model";
 import { registerOtpHtml } from "@/utils/mailoptions";
@@ -21,6 +22,8 @@ export const POST = async (request: NextRequest) => {
             { status: 400 }
          );
       }
+
+      await connectToDatabase();
 
       const user = await User.findById(decoded.id).select('email name');
       if (!user) {

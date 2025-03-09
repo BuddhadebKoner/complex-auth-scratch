@@ -1,3 +1,4 @@
+import { connectToDatabase } from "@/lib/db";
 import { verifyToken } from "@/lib/jwt";
 import User from "@/models/user.model";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,6 +12,7 @@ export const POST = async (request: NextRequest) => {
             { status: 401 }
          );
       }
+      await connectToDatabase();
 
       const decoded = verifyToken(token);
 
